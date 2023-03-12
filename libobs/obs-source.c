@@ -119,10 +119,10 @@ static const char *source_signals[] = {
 
 bool obs_source_init_context(struct obs_source *source, obs_data_t *settings,
 			     const char *name, obs_data_t *hotkey_data,
-			     bool private)
+			     bool _private)
 {
 	if (!obs_context_data_init(&source->context, OBS_OBJ_TYPE_SOURCE,
-				   settings, name, hotkey_data, private))
+				   settings, name, hotkey_data, _private))
 		return false;
 
 	return signal_handler_add_array(source->context.signals,
@@ -504,7 +504,7 @@ void obs_source_copy_filters(obs_source_t *dst, obs_source_t *src)
 	if (!obs_source_valid(src, "obs_source_copy_filters"))
 		return;
 
-	duplicate_filters(dst, src, dst->context.private);
+	duplicate_filters(dst, src, dst->context._private);
 }
 
 static void duplicate_filter(obs_source_t *dst, obs_source_t *filter)
@@ -684,7 +684,7 @@ static void obs_source_destroy_defer(struct obs_source *source)
 	}
 
 	blog(LOG_DEBUG, "%ssource '%s' destroyed",
-	     source->context.private ? "private " : "", source->context.name);
+	     source->context._private ? "private " : "", source->context.name);
 
 	audio_monitor_destroy(source->monitor);
 
@@ -4257,7 +4257,7 @@ void obs_source_set_name(obs_source_t *source, const char *name)
 		calldata_set_ptr(&data, "source", source);
 		calldata_set_string(&data, "new_name", source->context.name);
 		calldata_set_string(&data, "prev_name", prev_name);
-		if (!source->context.private)
+		if (!source->context._private)
 			signal_handler_signal(obs->signals, "source_rename",
 					      &data);
 		signal_handler_signal(source->context.signals, "rename", &data);
@@ -4549,7 +4549,7 @@ void obs_source_set_volume(obs_source_t *source, float volume)
 		calldata_set_float(&data, "volume", volume);
 
 		signal_handler_signal(source->context.signals, "volume", &data);
-		if (!source->context.private)
+		if (!source->context._private)
 			signal_handler_signal(obs->signals, "source_volume",
 					      &data);
 

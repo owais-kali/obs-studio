@@ -211,7 +211,7 @@ static bool create_video_stream(struct ffmpeg_output *stream,
 
 	data->video->time_base = context->time_base;
 #if LIBAVFORMAT_VERSION_MAJOR < 59
-	data->video->codec->time_base = context->time_base;
+//	data->video->codec->time_base = context->time_base;
 #endif
 	data->video->avg_frame_rate = av_inv_q(context->time_base);
 

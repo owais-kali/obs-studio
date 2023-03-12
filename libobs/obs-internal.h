@@ -540,13 +540,13 @@ struct obs_context_data {
 	struct obs_context_data *next;
 	struct obs_context_data **prev_next;
 
-	bool private;
+	bool _private;
 };
 
 extern bool obs_context_data_init(struct obs_context_data *context,
 				  enum obs_obj_type type, obs_data_t *settings,
 				  const char *name, obs_data_t *hotkey_data,
-				  bool private);
+				  bool _private);
 extern void obs_context_init_control(struct obs_context_data *context,
 				     void *object, obs_destroy_cb destroy);
 extern void obs_context_data_free(struct obs_context_data *context);
@@ -834,7 +834,7 @@ extern struct obs_source_info *get_source_info2(const char *unversioned_id,
 						uint32_t ver);
 extern bool obs_source_init_context(struct obs_source *source,
 				    obs_data_t *settings, const char *name,
-				    obs_data_t *hotkey_data, bool private);
+				    obs_data_t *hotkey_data, bool _private);
 
 extern bool obs_transition_init(obs_source_t *transition);
 extern void obs_transition_free(obs_source_t *transition);
@@ -869,7 +869,7 @@ static inline void obs_source_dosignal(struct obs_source *source,
 
 	calldata_init_fixed(&data, stack, sizeof(stack));
 	calldata_set_ptr(&data, "source", source);
-	if (signal_obs && !source->context.private)
+	if (signal_obs && !source->context._private)
 		signal_handler_signal(obs->signals, signal_obs, &data);
 	if (signal_source)
 		signal_handler_signal(source->context.signals, signal_source,

@@ -1670,7 +1670,7 @@ static inline void duplicate_item_data(struct obs_scene_item *dst,
 	dst->show_transition_duration = src->show_transition_duration;
 	dst->hide_transition_duration = src->hide_transition_duration;
 
-	if (duplicate_hotkeys && !dst_scene->source->context.private) {
+	if (duplicate_hotkeys && !dst_scene->source->context._private) {
 		obs_data_array_t *data0 = NULL;
 		obs_data_array_t *data1 = NULL;
 
@@ -2149,7 +2149,7 @@ static obs_sceneitem_t *obs_scene_add_internal(obs_scene_t *scene,
 
 	full_unlock(scene);
 
-	if (!scene->source->context.private)
+	if (!scene->source->context._private)
 		init_hotkeys(scene, item, obs_source_get_name(source));
 
 	signal_handler_connect(obs_source_get_signal_handler(source), "rename",

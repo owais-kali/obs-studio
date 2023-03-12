@@ -1879,7 +1879,7 @@ void obs_enum_sources(bool (*enum_proc)(void *, obs_source_t *), void *param)
 				obs_source_release(s);
 				break;
 			} else if (s->info.type == OBS_SOURCE_TYPE_INPUT &&
-				   !s->context.private &&
+				   !s->context._private &&
 				   !enum_proc(param, s)) {
 				obs_source_release(s);
 				break;
@@ -1904,7 +1904,7 @@ void obs_enum_scenes(bool (*enum_proc)(void *, obs_source_t *), void *param)
 		obs_source_t *s = obs_source_get_ref(source);
 		if (s) {
 			if (source->info.type == OBS_SOURCE_TYPE_SCENE &&
-			    !source->context.private && !enum_proc(param, s)) {
+			    !source->context._private && !enum_proc(param, s)) {
 				obs_source_release(s);
 				break;
 			}
@@ -1976,7 +1976,7 @@ static inline void *get_context_by_name(void *vfirst, const char *name,
 
 	context = *first;
 	while (context) {
-		if (!context->private && strcmp(context->name, name) == 0) {
+		if (!context->_private && strcmp(context->name, name) == 0) {
 			context = addref(context);
 			break;
 		}
@@ -2483,7 +2483,7 @@ obs_data_array_t *obs_save_sources_filtered(obs_save_source_filter_cb cb,
 
 	while (source) {
 		if ((source->info.type != OBS_SOURCE_TYPE_FILTER) != 0 &&
-		    !source->context.private && !source->removed &&
+		    !source->context._private && !source->removed &&
 		    !source->temp_removed && cb(data_, source)) {
 			obs_data_t *source_data = obs_save_source(source);
 
@@ -2537,7 +2537,7 @@ static inline bool obs_context_data_init_wrap(struct obs_context_data *context,
 {
 	assert(context);
 	memset(context, 0, sizeof(*context));
-	context->private = private;
+	context->_private = private;
 	context->type = type;
 
 	pthread_mutex_init_value(&context->rename_cache_mutex);
@@ -2561,10 +2561,10 @@ static inline bool obs_context_data_init_wrap(struct obs_context_data *context,
 bool obs_context_data_init(struct obs_context_data *context,
 			   enum obs_obj_type type, obs_data_t *settings,
 			   const char *name, obs_data_t *hotkey_data,
-			   bool private)
+			   bool _private)
 {
 	if (obs_context_data_init_wrap(context, type, settings, name,
-				       hotkey_data, private)) {
+				       hotkey_data, _private)) {
 		return true;
 	} else {
 		obs_context_data_free(context);
@@ -2642,7 +2642,7 @@ void obs_context_data_setname(struct obs_context_data *context,
 
 	if (context->name)
 		da_push_back(context->rename_cache, &context->name);
-	context->name = dup_name(name, context->private);
+	context->name = dup_name(name, context->_private);
 
 	pthread_mutex_unlock(&context->rename_cache_mutex);
 }
@@ -2723,7 +2723,7 @@ bool obs_obj_is_private(void *obj)
 	if (!context)
 		return false;
 
-	return context->private;
+	return context->_private;
 }
 
 bool obs_set_audio_monitoring_device(const char *name, const char *id)
@@ -3192,4 +3192,8 @@ bool obs_weak_object_references_object(obs_weak_object_t *weak,
 				       obs_object_t *object)
 {
 	return weak && object && weak->object == object;
+}
+
+struct obs_core *GetOBSCore(){
+	return obs;
 }
